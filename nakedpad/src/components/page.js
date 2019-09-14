@@ -12,16 +12,41 @@ class Page extends React.Component {
       name: 'Untitled Document',
       text: Plain.deserialize("Initial text"),
     }
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmitName = this.handleSubmitName.bind(this);
+
   }
 
   componentDidMount() {
+    console.log("main editor", this.MainEditor);
+    this.PageName.focus()
+    this.PageName.select()
+  }
+
+  handleChange(event) {
+    this.setState({name: event.target.value});
+  }
+
+  handleSubmitName(event) {
+    event.preventDefault();
     this.MainEditor.focus();
-    console.log(this.MainEditor);
   }
 
   render() {
     return <div className='Page'>
-      <h1>{this.state.name}</h1>
+
+      <form
+        onSubmit={this.handleSubmitName}
+      >
+        <input
+          className='PageName'
+          onChange={this.handleChange}
+          ref={(me) => this.PageName = me}
+          type="text"
+          value={ this.state.name }
+        />
+      </form>
       <Editor
         defaultValue={ this.state.text }
         ref={(editor) => this.MainEditor = editor}
