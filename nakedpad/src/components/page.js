@@ -4,6 +4,7 @@ import Plain from 'slate-plain-serializer';
 import { Editor } from 'slate-react';
 import Keymap from "@convertkit/slate-keymap"
 
+import ItemModal from './ItemModal.js';
 import './page.css';
 
 class Page extends React.Component {
@@ -12,6 +13,7 @@ class Page extends React.Component {
     this.state = {
       name: 'Untitled Document',
       value: Plain.deserialize("Initial Value"),
+      showItemModal: false,
     }
 
     this.plugins = [
@@ -46,11 +48,17 @@ class Page extends React.Component {
   createLink(event, editor) {
     event.preventDefault();
     console.log(`Creating link from ${this.state.value.fragment.text}`, event, editor);
+    this.setState({showItemModal: true});
+    console.log(this.state);
   }
 
   render() {
     return <div className='Page'>
-
+      <ItemModal
+        item={this.state.value.fragment.text}
+        show={this.state.showItemModal}
+        handleClose={() => this.setState({showItemModal:false})}
+      />
       <form
         onSubmit={this.handleSubmitName}
       >

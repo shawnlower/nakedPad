@@ -5,6 +5,9 @@ import Header from './components/header.js';
 import Page from './components/page.js';
 import Footer from './components/footer.js';
 
+// Bootstrap
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 function App() {
 
   return (
