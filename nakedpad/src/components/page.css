@@ -2,6 +2,7 @@
   background-color: beige;
   flex-grow: 1;
   flex: 1;
+  text-align: center;
 }
 
 .PageName {

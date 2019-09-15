@@ -10,12 +10,11 @@ class Page extends React.Component {
     super(props);
     this.state = {
       name: 'Untitled Document',
-      text: Plain.deserialize("Initial text"),
+      value: Plain.deserialize("Initial Value"),
     }
 
-    this.handleChange = this.handleChange.bind(this);
+    this.onChange = this.onChange.bind(this);
     this.handleSubmitName = this.handleSubmitName.bind(this);
-
   }
 
   componentDidMount() {
@@ -24,8 +23,9 @@ class Page extends React.Component {
     this.PageName.select()
   }
 
-  handleChange(event) {
-    this.setState({name: event.target.value});
+  onChange({ value }) {
+    console.log(value)
+    this.setState({ value });
   }
 
   handleSubmitName(event) {
@@ -41,14 +41,15 @@ class Page extends React.Component {
       >
         <input
           className='PageName'
-          onChange={this.handleChange}
+          onChange={ event => this.setState({name: event.target.value}) }
           ref={(me) => this.PageName = me}
           type="text"
           value={ this.state.name }
         />
       </form>
       <Editor
-        defaultValue={ this.state.text }
+        value={ this.state.value }
+        onChange={this.onChange}
         ref={(editor) => this.MainEditor = editor}
       />
       </div>

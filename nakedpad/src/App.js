@@ -6,6 +6,7 @@ import Page from './components/page.js';
 import Footer from './components/footer.js';
 
 function App() {
+
   return (
     <div className='wrapper'>
       <Header />
