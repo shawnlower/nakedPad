@@ -9,7 +9,7 @@
     "react-redux": "^7.1.1",
     "react-scripts": "3.1.1",
     "slate": "^0.47.8",
-    "slate-react": "^0.22.8"
+    "slate-react": "<= 0.22.5"
   },
   "scripts": {
     "start": "react-scripts start",
