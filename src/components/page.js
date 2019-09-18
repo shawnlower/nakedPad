@@ -1,11 +1,13 @@
 import React from 'react';
 
-import Plain from 'slate-plain-serializer';
 import { Editor } from 'slate-react';
+import Html from 'slate-html-serializer'
 import Keymap from "@convertkit/slate-keymap"
+import Plain from 'slate-plain-serializer';
 
 import ItemModal from './ItemModal.js';
 import './page.css';
+import { rules } from '../lib/slate.js';
 
 class Page extends React.Component {
   constructor(props) {
@@ -25,12 +27,14 @@ class Page extends React.Component {
       })
     ]
 
+    this.html = new Html({ rules });
+
     this.onChange = this.onChange.bind(this);
+    this.handleSave = this.handleSave.bind(this);
     this.handleSubmitName = this.handleSubmitName.bind(this);
   }
 
   componentDidMount() {
-    console.log("main editor", this.MainEditor);
     this.PageName.focus()
     this.PageName.select()
   }
@@ -47,9 +51,20 @@ class Page extends React.Component {
 
   createLink(event, editor) {
     event.preventDefault();
-    console.log(`Creating link from ${this.state.value.fragment.text}`, event, editor);
-    this.setState({showItemModal: true});
-    console.log(this.state);
+    console.log(`Creating link from ${this.state.value.fragment.text}`, event, this.state.value.fragment, editor);
+    if (this.state.value.selection.isExpanded) {
+      const href = window.prompt('Enter the URL of the link:');
+      this.editor.wrapInline({
+        type: 'link',
+        data: { href: href },
+      });
+      // this.setState({showItemModal: true});
+    }
+  }
+
+  handleSave(event) {
+      const doc = this.html.serialize(this.state.value);
+      console.log(this.state.value.document, doc);
   }
 
   render() {
@@ -70,10 +85,11 @@ class Page extends React.Component {
           value={ this.state.name }
         />
       </form>
+      <button onClick={this.handleSave}>Save</button>
       <Editor
         onChange={this.onChange}
         plugins = {this.plugins}
-        ref={(editor) => this.MainEditor = editor}
+        ref={(editor) => this.editor = editor}
         value={ this.state.value }
       />
       </div>
