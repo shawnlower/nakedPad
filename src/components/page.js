@@ -8,6 +8,7 @@ import Plain from 'slate-plain-serializer';
 import ItemModal from './ItemModal.js';
 import './page.css';
 import { rules } from '../lib/slate.js';
+import { RenderPlugin } from '../lib/render.js';
 
 class Page extends React.Component {
   constructor(props) {
@@ -18,16 +19,7 @@ class Page extends React.Component {
       showItemModal: false,
     }
 
-    this.plugins = [
-      Keymap({
-          "mod+x": (event, editor) => editor.toggleMark("bold"),
-          "mod+i": (event, editor) => editor.toggleMark("italic"),
-          "mod+u": (event, editor) => editor.toggleMark("underline"),
-          "mod+k": (event, editor) => this.createLink(event, editor),
-      })
-    ]
-
-    this.html = new Html({ rules });
+      this.html = new Html({ rules });
 
     this.onChange = this.onChange.bind(this);
     this.handleSave = this.handleSave.bind(this);
@@ -37,16 +29,26 @@ class Page extends React.Component {
   componentDidMount() {
     this.PageName.focus()
     this.PageName.select()
+    this.plugins = [
+      Keymap({
+        "mod+b": (event, editor) => { this.editor.toggleMark("bold"); event.preventDefault() },
+        "mod+i": (event, editor) => { this.editor.toggleMark("italic"); event.preventDefault() },
+        "mod+u": (event, editor) => { this.editor.toggleMark("underline"); event.preventDefault() },
+        "mod+k": (event, editor) => this.createLink(event, editor),
+      }),
+      // Rendering Plugin
+      RenderPlugin()
+    ]
   }
 
   onChange({ value }) {
-    console.log(value)
+    console.log('onChange', value)
     this.setState({ value });
   }
 
   handleSubmitName(event) {
     event.preventDefault();
-    this.MainEditor.focus();
+    this.editor.focus();
   }
 
   createLink(event, editor) {
@@ -63,37 +65,41 @@ class Page extends React.Component {
   }
 
   handleSave(event) {
-      const doc = this.html.serialize(this.state.value);
-      console.log(this.state.value.document, doc);
+    const doc = this.html.serialize(this.state.value);
+    console.log(this.state.value.document, doc);
   }
 
+
   render() {
-    return <div className='Page'>
-      <ItemModal
-        item={this.state.value.fragment.text}
-        show={this.state.showItemModal}
-        handleClose={() => this.setState({showItemModal:false})}
-      />
-      <form
-        onSubmit={this.handleSubmitName}
-      >
-        <input
-          className='PageName'
-          onChange={ event => this.setState({name: event.target.value}) }
-          ref={(me) => this.PageName = me}
-          type="text"
-          value={ this.state.name }
+    return (
+      <div className='Page'>
+        <ItemModal
+          item={this.state.value.fragment.text}
+          show={this.state.showItemModal}
+          handleClose={() => this.setState({showItemModal:false})}
         />
-      </form>
-      <button onClick={this.handleSave}>Save</button>
-      <Editor
-        onChange={this.onChange}
-        plugins = {this.plugins}
-        ref={(editor) => this.editor = editor}
-        value={ this.state.value }
-      />
+        <form
+          onSubmit={this.handleSubmitName}
+        >
+          <input
+            className='PageName'
+            onChange={ event => this.setState({name: event.target.value}) }
+            ref={(me) => this.PageName = me}
+            type="text"
+            value={ this.state.name }
+          />
+        </form>
+        <button onClick={this.handleSave}>Save</button>
+        <Editor
+          onChange={this.onChange}
+          plugins = {this.plugins}
+          ref={(editor) => this.editor = editor}
+          value={ this.state.value }
+        />
       </div>
+    )
   }
 }
+
 
 export default Page;

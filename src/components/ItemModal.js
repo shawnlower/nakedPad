@@ -9,8 +9,8 @@ class ItemModal extends React.Component {
     console.log("I've been mounted");
   }
 
-  componentDidUnmount() {
-    console.log("I've been Unmmounted");
+  componentWillUnmount() {
+    console.log("Unmounting...");
   }
 
   render() {

@@ -13,11 +13,12 @@ export const MARK_TAGS = {
   u: 'underline',
 }
 
-// eslint-disable-next-line
-// export const rules = [ { serialize() { return <p>'hi'</p>}}];
-
 export const rules = [
-  { serialize(obj, children) { console.log('init: ', obj.object, obj.type); } },
+  {
+    serialize(obj, children) { 
+      //console.log('init: ', obj.object, obj.type);
+    }
+  },
   {
     serialize(obj, children) {
       if (obj.object === 'inline') {
@@ -26,7 +27,7 @@ export const rules = [
             const href = obj.data.get('href');
             return <a href={href}>{children}</a>
           default:
-            return <p>{children}</p>
+              return <p>{children}</p>
         }
       }
     },
@@ -47,24 +48,24 @@ export const rules = [
     },
     serialize(obj, children) {
       if (obj.object === 'block') {
-        switch (obj.type) {
-          case 'code':
-            return (
-              <pre>
-                <code>{children}</code>
-              </pre>
-            )
-          case 'paragraph':
-            return <p className={obj.data.get('className')}>{children}</p>
-          case 'quote':
-            return <blockquote>{children}</blockquote>
-          default:
-            return <p>{children}</p>
+      switch (obj.type) {
+        case 'code':
+          return (
+            <pre>
+            <code>{children}</code>
+            </pre>
+          )
+        case 'paragraph':
+          return <p className={obj.data.get('className')}>{children}</p>
+        case 'quote':
+          return <blockquote>{children}</blockquote>
+        default:
+          return <p>{children}</p>
         }
       }
     },
   },
-    // Add a new rule that handles marks...
+  // Add a new rule that handles marks...
   {
     deserialize(el, next) {
       const type = MARK_TAGS[el.tagName.toLowerCase()]
@@ -77,7 +78,6 @@ export const rules = [
       }
     },
     serialize(obj, children) {
-      console.log("In serialize", obj.object, children)
       if (obj.object === 'mark') {
         switch (obj.type) {
           case 'bold':
