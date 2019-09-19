@@ -6,7 +6,7 @@ import React from 'react';
 export function RenderPlugin() {
   return {
     renderBlock (props, editor, next) {
-      console.log('renderBlock called for', props.node.type);
+      // console.log('renderBlock called for', props.node.type);
       switch (props.node.type) {
         case 'code':
           return (
@@ -29,7 +29,7 @@ export function RenderPlugin() {
 
     // Add a `renderMark` method to render marks.
     renderMark(props, editor, next) {
-      console.log('renderMark called for', props.mark.type);
+      // console.log('renderMark called for', props.mark.type);
       const { mark, attributes } = props
         switch (mark.type) {
           case 'bold':

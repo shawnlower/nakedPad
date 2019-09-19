@@ -17,11 +17,13 @@ class Page extends React.Component {
       name: 'Untitled Document',
       value: Plain.deserialize("Initial Value"),
       showItemModal: false,
+      href: 'initial-href',
     }
 
       this.html = new Html({ rules });
 
     this.onChange = this.onChange.bind(this);
+    this.updateValue = this.updateValue.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.handleSubmitName = this.handleSubmitName.bind(this);
   }
@@ -34,7 +36,7 @@ class Page extends React.Component {
         "mod+b": (event, editor) => { this.editor.toggleMark("bold"); event.preventDefault() },
         "mod+i": (event, editor) => { this.editor.toggleMark("italic"); event.preventDefault() },
         "mod+u": (event, editor) => { this.editor.toggleMark("underline"); event.preventDefault() },
-        "mod+k": (event, editor) => this.createLink(event, editor),
+        "mod+k": (event, editor) => this.showItemModal(event, editor),
       }),
       // Rendering Plugin
       RenderPlugin()
@@ -42,7 +44,6 @@ class Page extends React.Component {
   }
 
   onChange({ value }) {
-    console.log('onChange', value)
     this.setState({ value });
   }
 
@@ -51,17 +52,15 @@ class Page extends React.Component {
     this.editor.focus();
   }
 
-  createLink(event, editor) {
+  updateValue(value) {
+    // Update the document value
+    this.setState({ value: value });
+  }
+
+  showItemModal(event, editor) {
     event.preventDefault();
     console.log(`Creating link from ${this.state.value.fragment.text}`, event, this.state.value.fragment, editor);
-    if (this.state.value.selection.isExpanded) {
-      const href = window.prompt('Enter the URL of the link:');
-      this.editor.wrapInline({
-        type: 'link',
-        data: { href: href },
-      });
-      // this.setState({showItemModal: true});
-    }
+    this.setState({showItemModal: true});
   }
 
   handleSave(event) {
@@ -74,9 +73,13 @@ class Page extends React.Component {
     return (
       <div className='Page'>
         <ItemModal
-          item={this.state.value.fragment.text}
+          text={this.state.value.fragment.text}
           show={this.state.showItemModal}
-          handleClose={() => this.setState({showItemModal:false})}
+          editor={this.editor}
+          value={this.state.value}
+          handleClose={ () => this.setState( { showItemModal: false }) }
+          updateValue={this.updateValue}
+          href={ this.state.href }
         />
         <form
           onSubmit={this.handleSubmitName}
@@ -93,8 +96,8 @@ class Page extends React.Component {
         <Editor
           onChange={this.onChange}
           plugins = {this.plugins}
-          ref={(editor) => this.editor = editor}
-          value={ this.state.value }
+          ref={editor => this.editor = editor}
+          value={this.state.value}
         />
       </div>
     )
