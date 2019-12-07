@@ -10,6 +10,7 @@ NAME="nakedpad_api"
 import os
 
 from flask import Flask
+#from flask_marshmallow import Marshmallow
 from flask_rebar import Rebar
 
 # Need to setup rebar before importing decorated routes
@@ -19,8 +20,13 @@ rebar = Rebar()
 registry = rebar.create_handler_registry(prefix='/api/v1')
 
 # Import controllers for flask_rebar
-from .controllers import health
+from .controllers import (
+        documents,
+        health,
+    )
 
+# Import database
+from . import database
 
 # Factory method to create our application
 def create_app():
@@ -34,6 +40,13 @@ def create_app():
                 DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
                 )
 
-    rebar.init_app(app)
-    return app
 
+    rebar.init_app(app)
+
+    # Perform DB setup
+    database.db.init_app(app)
+    #Marshmallow(app)
+    with app.app_context():
+        database.db.create_all()
+
+    return app
