@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 .*.sw*
 node_modules
+
+# Local API config settings
+api/instance/*
