@@ -104,7 +104,6 @@ def post_documents():
     doc_id = normalize_doc_id(request['title'])
 
     # Create a new doc
-    # app.logger.debug(f"Updated doc id {getattr(doc, 'doc_id', '')} -> {doc_id}")
     doc = Document(
             doc_id=doc_id,
             title=request['title'],
@@ -142,7 +141,6 @@ def put_document(doc_id: str):
 
     if not doc:
         # Create a new doc
-        #raise err.NotFound(f"Document with doc_id {doc_id} was not found")
         app.logger.debug(f'Creating new doc via PUT: {doc_id}')
         doc = Document(
                 doc_id = doc_id,
