@@ -36,23 +36,41 @@ def get_documents():
         "errors": errors, 
     }
 
-@registry.handles(rule="/documents/<doc_id>", method="GET", response_body_schema=GetDocumentSchema())
+@registry.handles(
+        rule="/documents/<doc_id>",
+        method="GET",
+        response_body_schema={
+            200: GetDocumentSchema(),
+            404: GetDocumentSchema(),
+            500: GetDocumentSchema(),
+        }
+)
 def get_document(doc_id):
     errors = []
-    document = {}
+    document = None
+    rc = 200
 
     try:
         document = Document.query.get(doc_id)
+        if not document:
+            rc = 404
+            errors.append(
+                { "error_code": "not_found", "error_description":
+                    f"Unable to find document with doc_id='{doc_id}'" }
+            )
     except SQLAlchemyError as e:
+        rc = 500
+        failed = True
         app.logger.error(str(e))
         errors.append(
-            { "error_code": "db_error", "error_description": "Unable to access DB" }
+            { "error_code": "db_error",
+                  "error_description": "Unable to access DB" }
         )
 
     return {
         "document": document,
         "errors": errors, 
-    }
+    }, rc
 
 
 @registry.handles(

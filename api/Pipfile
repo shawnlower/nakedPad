@@ -11,6 +11,7 @@ flask-rebar = "*"
 sqlalchemy = "*"
 flask-sqlalchemy = "*"
 marshmallow-sqlalchemy = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.7"

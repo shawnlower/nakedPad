@@ -29,16 +29,18 @@ from .controllers import (
 from . import database
 
 # Factory method to create our application
-def create_app():
+def create_app(config_file=None):
     # create and configure the app
+
     app = Flask(NAME, instance_relative_config=True)
-    if os.path.exists(os.path.join(app.instance_path, "config.py")):
+    if config_file:
+        app.logger.warning("Using config file: " + config_file)
+        app.config.from_pyfile(config_file)
+    elif os.path.exists(os.path.join(app.instance_path, "config.py")):
+        app.logger.warning("Using instance config.")
         app.config.from_pyfile('config.py')
     else:
-        app.config.from_mapping(
-                SECRET_KEY='dev',
-                DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
-                )
+        raise Exception("No config file found in instance dir")
 
 
     rebar.init_app(app)

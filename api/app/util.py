@@ -21,8 +21,10 @@ def normalize_doc_id(doc: "Document", limit=100) -> str:
         # Query the existing records to see if a normalized doc_id
         # already exists
         
+        tmp_title = doc.title.replace(' ', '_')
+
         valid_chars = string.ascii_letters + string.digits + "_-"
-        valid_base = "".join([c for c in doc.title if c in valid_chars])
+        valid_base = "".join([c for c in tmp_title if c in valid_chars])
 
         results = Document.query.filter(Document.doc_id.startswith(valid_base))
 
