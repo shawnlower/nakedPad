@@ -6,7 +6,7 @@ from flask import current_app as app
 from app.models import Document
 from app.database import db
 
-def normalize_doc_id(doc: "Document", limit=100) -> str:
+def normalize_doc_id(doc: 'PostDocumentRequestSchema', limit=100) -> str:
     """
     Return a normalized document id, consisting only of
     letters and numbers, as well as - and _
@@ -14,17 +14,17 @@ def normalize_doc_id(doc: "Document", limit=100) -> str:
     limit: Maximum number of suffix iterations, e.g. valid_name99
     """
 
-    if not doc.title:
+    if not doc.get('title', ''):
         # Use a random UUID if we don't have a title
         return str(uuid4())
     else:
         # Query the existing records to see if a normalized doc_id
         # already exists
         
-        tmp_title = doc.title.replace(' ', '_')
+        tmp_title = doc['title'].replace(' ', '_')
 
-        valid_chars = string.ascii_letters + string.digits + "_-"
-        valid_base = "".join([c for c in tmp_title if c in valid_chars])
+        valid_chars = string.ascii_letters + string.digits + '_-'
+        valid_base = ''.join([c for c in tmp_title if c in valid_chars])
 
         results = Document.query.filter(Document.doc_id.startswith(valid_base))
 

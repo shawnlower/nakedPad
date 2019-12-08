@@ -6,4 +6,6 @@
 #
 ####
 
-# SQLALCHEMY_DATABASE_URI= "postgresql://user:pass@localhost/dbname"
+# SQLALCHEMY_DATABASE_URI = "postgresql://user:pass@localhost/dbname"
+SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
+SQLALCHEMY_TRACK_MODIFICATIONS = False

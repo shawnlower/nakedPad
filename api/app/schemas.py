@@ -55,7 +55,9 @@ class GetDocumentsSchema(Schema):
 
 
 class PostDocumentRequestSchema(Schema):
-    document = fields.Nested(DocumentSchema)
+    title = fields.Str()
+    text = fields.Str()
+
 
 class PostDocumentResponseSchema(Schema):
     doc_id = fields.String()

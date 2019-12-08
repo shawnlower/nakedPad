@@ -18,7 +18,7 @@ from app.models import (
    )
 from app.util import normalize_doc_id
 
-@registry.handles(rule="/documents", method="GET", response_body_schema=GetDocumentsSchema())
+@registry.handles(rule='/documents', method='GET', response_body_schema=GetDocumentsSchema())
 def get_documents():
     errors = []
     results = []
@@ -27,18 +27,18 @@ def get_documents():
     except SQLAlchemyError as e:
         app.logger.error(str(e))
         errors.append(
-            { "error_code": "db_error", "error_description": "Unable to access DB" }
+            { 'error_code': 'db_error', 'error_description': 'Unable to access DB' }
         )
 
     return {
-        "count": len(results),
-        "results": results,
-        "errors": errors, 
+        'count': len(results),
+        'results': results,
+        'errors': errors, 
     }
 
 @registry.handles(
-        rule="/documents/<doc_id>",
-        method="GET",
+        rule='/documents/<doc_id>',
+        method='GET',
         response_body_schema={
             200: GetDocumentSchema(),
             404: GetDocumentSchema(),
@@ -55,27 +55,27 @@ def get_document(doc_id):
         if not document:
             rc = 404
             errors.append(
-                { "error_code": "not_found", "error_description":
-                    f"Unable to find document with doc_id='{doc_id}'" }
+                { 'error_code': 'not_found', 'error_description':
+                    f'Unable to find document with doc_id={doc_id}' }
             )
     except SQLAlchemyError as e:
         rc = 500
         failed = True
         app.logger.error(str(e))
         errors.append(
-            { "error_code": "db_error",
-                  "error_description": "Unable to access DB" }
+            { 'error_code': 'db_error',
+                  'error_description': 'Unable to access DB' }
         )
 
     return {
-        "document": document,
-        "errors": errors, 
+        'document': document,
+        'errors': errors, 
     }, rc
 
 
 @registry.handles(
-        rule="/documents",
-        method="POST",
+        rule='/documents',
+        method='POST',
         response_body_schema={201: PostDocumentResponseSchema},
         request_body_schema=PostDocumentRequestSchema(),
 )
@@ -85,29 +85,25 @@ def post_documents():
     ##
 
     errors = []
-    body = flask_rebar.get_validated_body()
+    request = flask_rebar.get_validated_body()
     rc = 201
 
-    doc = body['document']
     # The API will be responsible for generating the document ID
 
     ## Normalize name. Note: this also commits the record, to avoid a race
-    doc_id = normalize_doc_id(doc)
+    doc_id = normalize_doc_id(request)
 
-    if doc.doc_id != doc_id:
-        # Create a new doc
-        app.logger.debug(f"Updating doc id {doc.doc_id} -> {doc_id}")
-        new_doc = Document(title=doc.title, doc_id=doc_id, text=doc.text,
-            created=doc.created)
-        db.session.add(new_doc)
-    else:
-        # Use existing
-        db.session.add(doc)
-        app.logger.debug(f"Not updating doc id {doc.doc_id} -> {doc_id}")
-
+    # Create a new doc
+    # app.logger.debug(f"Updated doc id {getattr(doc, 'doc_id', '')} -> {doc_id}")
+    doc = Document(
+            doc_id=doc_id,
+            title=request['title'],
+            text=request['text']
+    )
+    db.session.add(doc)
     db.session.commit()
 
     return {
-        "doc_id": doc_id,
-        "errors": errors, 
+        'doc_id': doc_id,
+        'errors': errors, 
     }, rc
