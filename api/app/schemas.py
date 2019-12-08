@@ -87,6 +87,5 @@ class PutDocumentRequestSchema(Schema, DisallowExtraFieldsMixin):
         Update a specific document and return 'HTTP 204 No content' with a
         'Content-Location' header specifying the existing location
     """
-    doc_id = fields.String()
     title = fields.String(missing=False)
     text = fields.String(missing=False)

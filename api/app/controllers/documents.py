@@ -96,6 +96,9 @@ def post_documents():
     app.logger.debug(request)
     rc = 201
 
+    if not request.get('title').strip():
+        raise err.BadRequest('Empty title is not allowed')
+
     # The API will be responsible for generating the document ID
     ## Normalize name. Note: this also commits the record, to avoid a race
     doc_id = normalize_doc_id(request['title'])
@@ -121,7 +124,7 @@ def post_documents():
         response_body_schema={
             201: PostDocumentResponseSchema,
             204: PostDocumentResponseSchema,
-            404: PostDocumentResponseSchema},
+        },
         request_body_schema=PutDocumentRequestSchema(),
 )
 def put_document(doc_id: str):
@@ -159,6 +162,37 @@ def put_document(doc_id: str):
 
         db.session.add(doc)
         db.session.commit()
+
+    return {
+        'errors': errors, 
+    }, rc
+
+
+@registry.handles(
+        rule='/documents/<doc_id>',
+        method='DELETE',
+        response_body_schema={
+            204: PostDocumentResponseSchema,
+            404: PostDocumentResponseSchema
+        }
+)
+def delete_document(doc_id: str):
+    ###
+    # Delete a document by doc_id
+    ##
+
+    errors = []
+    rc = 204
+
+    # Get the document from the store by ID
+    doc = Document.query.get(doc_id)
+
+    if not doc:
+        # Create a new doc
+        raise err.NotFound(f"Document with doc_id {doc_id} was not found")
+
+    db.session.delete(doc)
+    db.session.commit()
 
     return {
         'errors': errors, 

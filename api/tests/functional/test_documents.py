@@ -41,21 +41,21 @@ def test_bad_posts(test_client):
         # With empty data
         {},
         # Invalid keys
-        { 'cats': 'are lazy', 'title': 'foo' },
+        { 'cats': 'are lazy', 'title': 'test2' },
         # More invalid keys
-        { 'title': 'valid title', 'text': 'foo', 'doc_id': 'should not be provided' },
+        { 'title': 'test3', 'text': 'foo', 'doc_id': 'should not be provided' },
         # Missing title key
-        { 'title': '', 'text': 'foo'} ,
+        { 'title': '', 'text': 'test4'} ,
         # Bad data type
-        { 'title': 'a title', 'text': None }
+        { 'title': 'test5', 'text': None }
     ]
     responses = map(
             lambda req: test_client.post('/api/v1/documents', json=req),
             requests
     )
     for resp in responses:
-        print(resp.json)
-        assert resp.status_code == 400
+        if resp.status_code != 400:
+            assert resp.json and False
 
 
 def test_get_after_post(test_client):
@@ -138,3 +138,27 @@ def test_update_document(test_client):
 
     # Creation date should be updated
     assert doc.get('updated') != orig_updated
+
+
+def test_delete_document(test_client):
+    """
+    GIVEN a Flask application
+    WHEN making a DELETE request
+    THEN it should return a successful status code and
+    THEN a subsequent GET should NOT return the document
+    """
+    request = {
+        'title': 'A Tale of Two Cities',
+        'text': 'It was the best of times.  It was the worst of times.'
+    }
+
+    response = test_client.post('/api/v1/documents', json=request)
+    doc_id = response.json['document']['doc_id']
+    response = test_client.get(f'/api/v1/documents/{doc_id}')
+    assert response.status_code == 200
+
+    response = test_client.delete(f'/api/v1/documents/{doc_id}')
+    assert response.status_code == 204
+
+    response = test_client.get(f'/api/v1/documents/{doc_id}')
+    assert response.status_code == 404
