@@ -10,17 +10,22 @@ import './page.css';
 import { rules } from '../lib/slate.js';
 import { RenderPlugin } from '../lib/render.js';
 
+import { NakedPadApi } from '../services/nakedpad_api/nakedpad_api.js';
+
 class Page extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       name: 'Untitled Document',
+      doc_id: null,
       value: Plain.deserialize("Initial Value"),
       showItemModal: false,
       href: 'initial-href',
     }
 
-      this.html = new Html({ rules });
+    this.html = new Html({ rules });
+
+    this.api = new NakedPadApi();
 
     this.onChange = this.onChange.bind(this);
     this.updateValue = this.updateValue.bind(this);
@@ -66,6 +71,18 @@ class Page extends React.Component {
   handleSave(event) {
     const doc = this.html.serialize(this.state.value);
     console.log(this.state.value.document, doc);
+
+    console.log(this.api);
+    this.api.save(this.state.doc_id,
+                  this.state.name,
+                  doc).then(doc_id => {
+      // Update the document ID
+      if (doc_id !== this.state.doc_id) {
+        this.setState({doc_id: doc_id});
+        console.log(`Updated Document ID to ${doc_id}`);
+      }
+    });
+    
   }
 
 
