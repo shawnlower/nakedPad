@@ -31,6 +31,33 @@ def test_valid_post_succeeds(test_client):
     assert doc.get('created')
     assert doc.get('doc_id')
 
+def test_bad_posts(test_client):
+    """
+    GIVEN a Flask application
+    WHEN POSTing invalid requests
+    THEN it should return a '400 Bad Request' response with an error payload
+    """
+    requests = [
+        # With empty data
+        {},
+        # Invalid keys
+        { 'cats': 'are lazy', 'title': 'foo' },
+        # More invalid keys
+        { 'title': 'valid title', 'text': 'foo', 'doc_id': 'should not be provided' },
+        # Missing title key
+        { 'title': '', 'text': 'foo'} ,
+        # Bad data type
+        { 'title': 'a title', 'text': None }
+    ]
+    responses = map(
+            lambda req: test_client.post('/api/v1/documents', json=req),
+            requests
+    )
+    for resp in responses:
+        print(resp.json)
+        assert resp.status_code == 400
+
+
 def test_get_after_post(test_client):
     """
     GIVEN a Flask application

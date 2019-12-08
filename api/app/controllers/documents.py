@@ -2,6 +2,7 @@
 
 from flask import current_app as app
 import flask_rebar
+from flask_rebar import get_validated_body
 from sqlalchemy.exc import SQLAlchemyError
 
 from app import registry
@@ -76,7 +77,9 @@ def get_document(doc_id):
 @registry.handles(
         rule='/documents',
         method='POST',
-        response_body_schema={201: PostDocumentResponseSchema},
+        response_body_schema={
+            201: PostDocumentResponseSchema,
+            400: PostDocumentResponseSchema},
         request_body_schema=PostDocumentRequestSchema(),
 )
 def post_documents():
@@ -86,10 +89,10 @@ def post_documents():
 
     errors = []
     request = flask_rebar.get_validated_body()
+    app.logger.debug(request)
     rc = 201
 
     # The API will be responsible for generating the document ID
-
     ## Normalize name. Note: this also commits the record, to avoid a race
     doc_id = normalize_doc_id(request)
 
