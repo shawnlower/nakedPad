@@ -60,7 +60,7 @@ class PostDocumentRequestSchema(Schema):
 
 
 class PostDocumentResponseSchema(Schema):
-    doc_id = fields.String()
+    document = fields.Nested(DocumentSchema())
     errors = fields.Nested(ErrorSchema(), many=True)
 
 

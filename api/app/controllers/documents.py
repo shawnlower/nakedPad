@@ -104,6 +104,6 @@ def post_documents():
     db.session.commit()
 
     return {
-        'doc_id': doc_id,
+        'document': doc,
         'errors': errors, 
     }, rc
