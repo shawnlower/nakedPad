@@ -1,7 +1,10 @@
 # Controller for /documents endpoint
 
+from datetime import datetime
+
 from flask import current_app as app
 import flask_rebar
+import flask_rebar.errors as err
 from flask_rebar import get_validated_body
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -10,6 +13,7 @@ from app.schemas import (
         DocumentSchema,
         GetDocumentSchema,
         GetDocumentsSchema,
+        PutDocumentRequestSchema,
         PostDocumentRequestSchema,
         PostDocumentResponseSchema,
     )
@@ -94,7 +98,7 @@ def post_documents():
 
     # The API will be responsible for generating the document ID
     ## Normalize name. Note: this also commits the record, to avoid a race
-    doc_id = normalize_doc_id(request)
+    doc_id = normalize_doc_id(request['title'])
 
     # Create a new doc
     # app.logger.debug(f"Updated doc id {getattr(doc, 'doc_id', '')} -> {doc_id}")
@@ -108,5 +112,54 @@ def post_documents():
 
     return {
         'document': doc,
+        'errors': errors, 
+    }, rc
+
+@registry.handles(
+        rule='/documents/<doc_id>',
+        method='PUT',
+        response_body_schema={
+            201: PostDocumentResponseSchema,
+            204: PostDocumentResponseSchema,
+            404: PostDocumentResponseSchema},
+        request_body_schema=PutDocumentRequestSchema(),
+)
+def put_document(doc_id: str):
+    ###
+    # Update a document by doc_id
+    ##
+
+    errors = []
+    request = flask_rebar.get_validated_body()
+    app.logger.debug(request)
+    rc = 204
+
+    # Get the document from the store by ID
+    doc = Document.query.get(doc_id)
+
+    if not doc:
+        # Create a new doc
+        #raise err.NotFound(f"Document with doc_id {doc_id} was not found")
+        app.logger.debug(f'Creating new doc via PUT: {doc_id}')
+        doc = Document(
+                doc_id = doc_id,
+                title = request['title'],
+                text = request['text'],
+                created = datetime.utcnow()
+        )
+        db.session.add(doc)
+        db.session.commit()
+        rc = 201
+    else:
+        # Update existing
+        app.logger.debug(f'Updated existing doc via PUT: {doc_id}')
+        doc.title = request['title']
+        doc.text = request['text']
+        doc.updated = datetime.utcnow()
+
+        db.session.add(doc)
+        db.session.commit()
+
+    return {
         'errors': errors, 
     }, rc

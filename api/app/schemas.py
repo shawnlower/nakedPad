@@ -25,7 +25,7 @@ from app.database import db
 ####
 
 class HealthSchema(Schema):
-    status = fields.Str(
+    status = fields.String(
             validate = ContainsOnly(
                 choices=["ok", "error"]
             ),
@@ -44,8 +44,9 @@ class HealthSchema(Schema):
 class DocumentSchema(Schema):
     doc_id = fields.String(missing=False)
     title = fields.String(missing=False)
-    text = fields.Str(missing=False)
+    text = fields.String(missing=False)
     created = fields.DateTime(missing=False)
+    updated = fields.DateTime(missing=False)
 
 
 class ErrorSchema(Schema):
@@ -66,8 +67,8 @@ class GetDocumentsSchema(Schema):
 
 
 class PostDocumentRequestSchema(Schema, DisallowExtraFieldsMixin):
-    title = fields.Str(missing=False)
-    text = fields.Str(missing=False)
+    title = fields.String(missing=False)
+    text = fields.String(missing=False)
 
 
 class PostDocumentResponseSchema(Schema):
@@ -75,3 +76,17 @@ class PostDocumentResponseSchema(Schema):
     errors = fields.Nested(ErrorSchema(), many=True)
 
 
+class PutDocumentRequestSchema(Schema, DisallowExtraFieldsMixin):
+    """
+    An HTTP PUT of a document may or may not include the doc_id
+    There are several use cases, which should all be idempotent:
+    1) PUT /documents
+        Create a new resource and return 'HTTP 201 Created' with a 'Content-Location'
+        header specifying the new location: /documents/<doc_id>
+    2) PUT /documents/<doc_id>
+        Update a specific document and return 'HTTP 204 No content' with a
+        'Content-Location' header specifying the existing location
+    """
+    doc_id = fields.String()
+    title = fields.String(missing=False)
+    text = fields.String(missing=False)
