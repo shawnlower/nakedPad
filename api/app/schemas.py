@@ -56,14 +56,14 @@ class ErrorSchema(Schema):
 
 
 class GetDocumentSchema(Schema):
-    document = fields.Nested(DocumentSchema(), many=False)
-    errors = fields.Nested(ErrorSchema(), many=True)
+    document = fields.Nested(DocumentSchema, many=False)
+    errors = fields.Nested(ErrorSchema, many=True)
 
 
 class GetDocumentsSchema(Schema):
     count = fields.Integer()
-    results = fields.Nested(DocumentSchema(), many=True)
-    errors = fields.Nested(ErrorSchema(), many=True)
+    results = fields.Nested(DocumentSchema, many=True)
+    errors = fields.Nested(ErrorSchema, many=True)
 
 
 class PostDocumentRequestSchema(Schema, DisallowExtraFieldsMixin):
@@ -72,8 +72,8 @@ class PostDocumentRequestSchema(Schema, DisallowExtraFieldsMixin):
 
 
 class PostDocumentResponseSchema(Schema):
-    document = fields.Nested(DocumentSchema())
-    errors = fields.Nested(ErrorSchema(), many=True)
+    document = fields.Nested(DocumentSchema)
+    errors = fields.Nested(ErrorSchema, many=True)
 
 
 class PutDocumentRequestSchema(Schema, DisallowExtraFieldsMixin):
