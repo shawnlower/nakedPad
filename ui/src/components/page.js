@@ -75,7 +75,8 @@ class Page extends React.Component {
     console.log(this.api);
     this.api.save(this.state.doc_id,
                   this.state.name,
-                  doc).then(doc_id => {
+                  doc)
+      .then(doc_id => {
       // Update the document ID
       if (doc_id !== this.state.doc_id) {
         this.setState({doc_id: doc_id});

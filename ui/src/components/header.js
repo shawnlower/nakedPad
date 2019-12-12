@@ -15,7 +15,10 @@ class Header extends React.Component {
     return <div className='Header'>
       <div><h1>Editor</h1></div>
       <div>
-        <span>Time: { this.state.date.toLocaleTimeString() }</span>
+        <ul>
+          <li>Time: { this.state.date.toLocaleTimeString() }</li>
+          <li>Doc ID: {this.state.doc_id}</li>
+        </ul>
       </div>
     </div>
   }

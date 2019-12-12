@@ -27,7 +27,11 @@ export class NakedPadApi {
       });
     }
     return resp.then(response => response.json())
-      .then(data => { console.log('got', data); });
+      .then(data => {
+        doc_id = data.document.doc_id;
+        console.log(data.document);
+        return doc_id;
+      });
   }
 }
 
