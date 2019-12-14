@@ -6,7 +6,7 @@ import Keymap from "@convertkit/slate-keymap"
 import Plain from 'slate-plain-serializer';
 
 import ItemModal from './ItemModal.js';
-import './page.css';
+import * as s from './page.css';
 import { rules } from '../lib/slate.js';
 import { RenderPlugin } from '../lib/render.js';
 

@@ -1,12 +1,12 @@
 import React from 'react';
 
-import './App.css';
-import Header from './components/header.js';
+import * as s from './App.css';
+import Header from './components/header.jsx';
 import Page from './components/page.js';
-import Footer from './components/footer.js';
+import Footer from './components/footer.jsx';
 
 // Bootstrap
-import 'bootstrap/dist/css/bootstrap.min.css';
+import * as bootstrap from 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
 
