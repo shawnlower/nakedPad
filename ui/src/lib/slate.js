@@ -16,7 +16,7 @@ export const MARK_TAGS = {
 export const rules = [
   {
     serialize(obj, children) { 
-      //console.log('init: ', obj.object, obj.type);
+      console.log('init: ', obj.object, obj.type);
     }
   },
   {

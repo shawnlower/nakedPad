@@ -32,6 +32,7 @@ class ItemModal extends React.Component {
 
   handleSave() {
     // If we don't already have some text selected, use the value from the text box
+    return;
     if (!this.props.value.selection.isExpanded) {
       const text = this.state.linkText || 'Link';
       this.props.editor.insertText(text);
